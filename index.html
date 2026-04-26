@@ -81,7 +81,7 @@
     </div>
 
     <script>
-        const ALL_WORDS = ["CIDER", "APPLE", "APPLY"];
+        const ALL_WORDS = ["AWING", "AGLOW", "CUTIE", "CHARM", "SMILE", "SWEET", "BELLE"];
         let possibleWords = [...ALL_WORDS];
         let currentGuess = "";
         let currentRow = 0;
@@ -212,7 +212,7 @@
             }
 
             if (bestPattern === "correct,correct,correct,correct,correct") {
-                alert("You won? Impossible!");
+                alert("You won? Impossible! Here is your reward: 3 2");
             } else if (currentRow === maxGuesses - 1) {
                 alert("You lost! The word could have been: " + possibleWords[0]);
             }
