@@ -24,7 +24,7 @@ for (let i = 0; i < 6; i++) {
 const keys = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE']
+    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M']
 ];
 
 keys.forEach(row => {
@@ -162,21 +162,21 @@ function getEvilFeedback(guess) {
         const fb = feedbackMap[key].fb;
         const count = feedbackMap[key].count;
         const isWinning = fb.every(c => c === 'green');
-        if (!isWinning && count < lowCount) {
+        if (count < lowCount) {
             lowCount = count;
             bestFb = fb;
         }
     }
     // If no non-winning feedback, fall back to any
-    if (!bestFb) {
-        for (const key in feedbackMap) {
-            const count = feedbackMap[key].count;
-            if (count > maxCount) {
-                maxCount = count;
-                bestFb = feedbackMap[key].fb;
-            }
-        }
-    }
+    // if (!bestFb) {
+    //     for (const key in feedbackMap) {
+    //         const count = feedbackMap[key].count;
+    //         if (count > maxCount) {
+    //             maxCount = count;
+    //             bestFb = feedbackMap[key].fb;
+    //         }
+    //     }
+    // }
 
     // Filter possible words
     currentPossible = currentPossible.filter(word => {
