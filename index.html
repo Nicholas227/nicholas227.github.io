@@ -10,11 +10,11 @@
             font-family: 'Clear Sans, 'Helvetica Neue', Arial, sans-serif';
             display: flex;
             flex-direction: column;
-            alignment-items: center;
+            align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-attachment: 121213;
+            background-color: #121213;
             color: white;
         }
         #game {
@@ -115,30 +115,31 @@
             }
             const keyboard = document.getElementById("keyboard");
             const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
-            rows.forEach((row) => {
+            rows.forEach((rowStr, i) => {
                 const kbRow = document.createElement("div");
                 kbRow.className = "kb-row";
-                if( i == 2) {
+                if(i === 2) {
                     const enterKey = document.createElement("button");
                     enterKey.className = "key wide";
                     enterKey.textContent = "Enter";
                     enterKey.addEventListener("click", submitGuess);
                     kbRow.appendChild(enterKey);
                 }
-                for( const char of rowStr) {
+                for(const char of rowStr) {
                     const key = document.createElement("button");
                     key.className = "key";
                     key.textContent = char;
                     key.onclick = () => addLetter(char);
                     kbRow.appendChild(key);
                 }
-                if( i == 2) {
+                if(i === 2) {
                     const delKey = document.createElement("button");
                     delKey.className = "key wide";
                     delKey.textContent = "DEL";
                     delKey.onclick = deleteLetter;
                     kbRow.appendChild(delKey);
                 }
+                keyboard.appendChild(kbRow);
             });
         }
 
@@ -165,7 +166,7 @@
 
         function getPattern(guess, word) {
             let pattern = ["absent", "absent", "absent", "absent", "absent"];
-            let targetArr = target.split("");
+            let targetArr = word.split("");
             let guessArr = guess.split("");
 
 
