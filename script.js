@@ -155,23 +155,23 @@ function getEvilFeedback(guess) {
         feedbackMap[key].count++;
     });
 
-    // Find the feedback with the highest count
-    let maxCount = 0;
-    let bestFb = null;
+    // Find the feedback with the lowest count (most restrictive)
+    let minCount = Infinity;
+    let worstFb = null;
     for (const key in feedbackMap) {
-        if (feedbackMap[key].count > maxCount) {
-            maxCount = feedbackMap[key].count;
-            bestFb = feedbackMap[key].fb;
+        if (feedbackMap[key].count < minCount) {
+            minCount = feedbackMap[key].count;
+            worstFb = feedbackMap[key].fb;
         }
     }
 
     // Filter possible words
     currentPossible = currentPossible.filter(word => {
         const fb = getFeedback(guess, word);
-        return fb.every((c, i) => c === bestFb[i]);
+        return fb.every((c, i) => c === worstFb[i]);
     });
 
-    return bestFb;
+    return worstFb;
 }
 
 function displayFeedback(feedback) {
