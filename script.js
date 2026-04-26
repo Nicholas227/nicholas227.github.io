@@ -156,14 +156,14 @@ function getEvilFeedback(guess) {
     });
 
     // Find the feedback with the highest count, but prefer non-winning feedbacks
-    let maxCount = 0;
+    let lowCount = Infinity;
     let bestFb = null;
     for (const key in feedbackMap) {
         const fb = feedbackMap[key].fb;
         const count = feedbackMap[key].count;
         const isWinning = fb.every(c => c === 'green');
-        if (!isWinning && count > maxCount) {
-            maxCount = count;
+        if (!isWinning && count < lowCount) {
+            lowCount = count;
             bestFb = fb;
         }
     }
