@@ -5,15 +5,240 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evil Wordle</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Clear Sans, 'Helvetica Neue', Arial, sans-serif';
+            display: flex;
+            flex-direction: column;
+            alignment-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-attachment: 121213;
+            color: white;
+        }
+        #game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 5px;
+        }
+        .tile {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            text-transform: uppercase;
+            user-select: none;
+            font-weight: bold;
+            border: 2px solid #3a3a3c;
+            background-color: #eee;
+        }
+        .tile[data-state="correct"] {
+            background-color: #538d4e;
+            border-color: #538d4e;
+        }
+        .tile[data-state="present"] {
+            background-color: #b59f3b;
+            border-color: #b59f3b;
+        }
+        .tile[data-state="absent"] {
+            background-color: #3a3a3c;
+            border-color: #3a3a3c;
+        }
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .kb-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        .key {
+            background-color: #818384;
+            border: 0;
+            border-radius: 4px;
+            padding: 15px 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer; 
+            text-transform: uppercase;
+        }
+        .key.wide {
+            padding: 15px 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="game">
         <h1>Evil Wordle</h1>
         <h2>Based on the hit CS312 Assignment Evil Hangman</h2>
-        <div id="board"></div>
-        <div id="keyboard"></div>
-        <div id="message"></div>
+        <div class="grid" id="grid">
+            <!-- Game grid will be generated here -->
+        </div>
+        <div class="keyboard" id="keyboard">
+            <!-- On-screen keyboard will be generated here -->
     </div>
-    <script src="script.js"></script>
+    <script>
+        const ALL_WORDS = ["CIDER", "APPLY", "APPLE"];
+        const possibleWords = [...ALL_WORDS];
+        let currentGuess = "";
+        let currentRow = 0;
+        const maxGuesses = 6;
+
+        function init() {
+            const grid = document.getElementById("grid");
+            for (let i = 0; i < maxGuesses; i++) {
+                const row = document.createElement("div");
+                row.classList.add("row");
+                for (let j = 0; j < 5; j++) {
+                    const tile = document.createElement("div");
+                    tile.classList.add("tile");
+                    row.appendChild(tile);
+                }
+                grid.appendChild(row);
+            }
+            const keyboard = document.getElementById("keyboard");
+            const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+            rows.forEach((row) => {
+                const kbRow = document.createElement("div");
+                kbRow.className = "kb-row";
+                if( i == 2) {
+                    const enterKey = document.createElement("button");
+                    enterKey.className = "key wide";
+                    enterKey.textContent = "Enter";
+                    enterKey.addEventListener("click", submitGuess);
+                    kbRow.appendChild(enterKey);
+                }
+                for( const char of rowStr) {
+                    const key = document.createElement("button");
+                    key.className = "key";
+                    key.textContent = char;
+                    key.onclick = () => addLetter(char);
+                    kbRow.appendChild(key);
+                }
+                if( i == 2) {
+                    const delKey = document.createElement("button");
+                    delKey.className = "key wide";
+                    delKey.textContent = "DEL";
+                    delKey.onclick = deleteLetter;
+                    kbRow.appendChild(delKey);
+                }
+            });
+        }
+
+        function addLetter(letter) {
+            if (currentGuess.length < 5) {
+                currentGuess += letter;
+                updateGrid();
+            }
+        }
+
+        function deleteLetter() {
+            currentGuess = currentGuess.slice(0, -1);
+            updateGrid();
+        }
+
+        function updateGrid() {
+            const row = document.getElementsByClassName("row")[currentRow];
+            const tiles = row.getElementsByClassName("tile");
+            for (let i = 0; i < 5; i++) {
+                tiles[i].textContent = currentGuess[i] || "";
+            }
+        }
+
+
+        function getPattern(guess, word) {
+            let pattern = ["absent", "absent", "absent", "absent", "absent"];
+            let targetArr = target.split("");
+            let guessArr = guess.split("");
+
+
+            // First pass for correct letters
+            for (let i = 0; i < 5; i++) {
+                if (guessArr[i] === targetArr[i]) {
+                    pattern[i] = "correct";
+                    targetArr[i] = null; // Mark as used
+                    guessArr[i] = null; // Mark as processed
+                }
+            }   
+            // Second pass for present
+            for (let i = 0; i < 5; i++) {
+                if(guessArr[i] !== null) {
+                    let index = targetArr.indexOf(guessArr[i]);
+                    if (index !== -1) {
+                        pattern[i] = "present";
+                        targetArr[index] = null;
+                    }
+                }
+            }
+
+            return pattern.join(",");
+        }
+
+        function submitGuess() {
+            if (currentGuess.length !== 5) return;
+            const patterns = {};
+            possibleWords.forEach(word => {
+                const pattern = getPattern(currentGuess, word);
+                if (!patterns[pattern]) {
+                    patterns[pattern] = [];
+                }
+                patterns[pattern].push(word);
+            });
+
+            let bestPattern = "";
+            let maxCount = -1;
+            for (const p in patterns) {
+                if(patterns[p].length > maxCount) {
+                    maxCount = patterns[p].length;
+                    bestPattern = p;
+                }
+            }
+
+            possibleWords = patterns[bestPattern];
+            const patternArr = bestPattern.split(",");
+            const row = document.getElementsByClassName("row")[currentRow];
+            const tiles = row.getElementsByClassName("tile");
+            for (let i = 0; i < 5; i++) {
+                tiles[i].setAttribute("data-state", patternArr[i]);
+            }
+
+            if(bestPattern === "correct,correct,correct,correct,correct") {
+                alert("Congratulations! You've guessed the word!");
+            } else if (currentRow === maxGuesses - 1) {
+                alert(`Game Over! The word was: ${possibleWords[0]}`);
+            } else {
+                currentGuess = "";
+                currentRow++;
+            }
+        }
+
+        init();
+        document.addEventListener("keydown", (e) => {
+            if(e.key === "Enter") {
+                submitGuess();
+            } else if (e.key === "Backspace") {
+                deleteLetter();
+            } else if (/^[a-zA-Z]$/.test(e.key)) {
+                addLetter(e.key.toUpperCase());
+            }
+        });
+    </script>
 </body>
 </html>
