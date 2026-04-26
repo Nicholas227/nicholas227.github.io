@@ -155,25 +155,15 @@ function getEvilFeedback(guess) {
         feedbackMap[key].count++;
     });
 
-    // Find the feedback with the highest count
-    let maxCount = 0;
-    for (const key in feedbackMap) {
-        const count = feedbackMap[key].count;
-        if (count > maxCount) {
-            maxCount = count;
-        }
-    }
-
-    // Among feedbacks with max count, prefer winning ones
+    // Find the feedback with the lowest count
+    let minCount = Infinity;
     let bestFb = null;
     for (const key in feedbackMap) {
         const fb = feedbackMap[key].fb;
         const count = feedbackMap[key].count;
-        const isWinning = fb.every(c => c === 'green');
-        if (count === maxCount) {
-            if (isWinning || bestFb === null) {
-                bestFb = fb;
-            }
+        if (count < minCount) {
+            minCount = count;
+            bestFb = fb;
         }
     }
 

@@ -5,7 +5,7 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: #121213;
 }
 
 #game {
@@ -32,6 +32,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
     font-size: 24px;
     font-weight: bold;
     text-transform: uppercase;
