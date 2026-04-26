@@ -179,7 +179,7 @@
         function submitGuess() {
             if (currentGuess.length !== 5) return;
 
-            // Evil Logic: Find the pattern that leaves the most possible words
+            // Evil Logic: Find the pattern with the least information (fewest greens, then fewest yellows)
             const patterns = {};
             possibleWords.forEach(word => {
                 const p = getPattern(currentGuess, word);
@@ -188,10 +188,16 @@
             });
 
             let bestPattern = "";
-            let maxCount = -1;
+            let minGreens = Infinity;
+            let minYellows = Infinity;
             for (const p in patterns) {
-                if (patterns[p].length > maxCount) {
-                    maxCount = patterns[p].length;
+                const patternArr = p.split(",");
+                const greens = patternArr.filter(x => x === "correct").length;
+                const yellows = patternArr.filter(x => x === "present").length;
+                
+                if (greens < minGreens || (greens === minGreens && yellows < minYellows)) {
+                    minGreens = greens;
+                    minYellows = yellows;
                     bestPattern = p;
                 }
             }
