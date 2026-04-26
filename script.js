@@ -155,23 +155,36 @@ function getEvilFeedback(guess) {
         feedbackMap[key].count++;
     });
 
-    // Find the feedback with the lowest count (most restrictive)
-    let minCount = Infinity;
-    let worstFb = null;
+    // Find the feedback with the highest count, but prefer non-winning feedbacks
+    let maxCount = 0;
+    let bestFb = null;
     for (const key in feedbackMap) {
-        if (feedbackMap[key].count < minCount) {
-            minCount = feedbackMap[key].count;
-            worstFb = feedbackMap[key].fb;
+        const fb = feedbackMap[key].fb;
+        const count = feedbackMap[key].count;
+        const isWinning = fb.every(c => c === 'green');
+        if (!isWinning && count > maxCount) {
+            maxCount = count;
+            bestFb = fb;
+        }
+    }
+    // If no non-winning feedback, fall back to any
+    if (!bestFb) {
+        for (const key in feedbackMap) {
+            const count = feedbackMap[key].count;
+            if (count > maxCount) {
+                maxCount = count;
+                bestFb = feedbackMap[key].fb;
+            }
         }
     }
 
     // Filter possible words
     currentPossible = currentPossible.filter(word => {
         const fb = getFeedback(guess, word);
-        return fb.every((c, i) => c === worstFb[i]);
+        return fb.every((c, i) => c === bestFb[i]);
     });
 
-    return worstFb;
+    return bestFb;
 }
 
 function displayFeedback(feedback) {
