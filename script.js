@@ -97,7 +97,7 @@ function submitGuess() {
     updateKeyboard(currentGuess, feedback);
 
     if (feedback.every(c => c === 'green')) {
-        message.textContent = 'You win! The word was one of the possibilities.';
+        message.textContent = 'Congratulations on your victory! Here is your prize: 35 3 8';
         document.removeEventListener('keydown', handleKeyDown);
         return;
     }
