@@ -6,6 +6,7 @@ body {
     min-height: 100vh;
     margin: 0;
     background-color: #121213;
+    color: white;
 }
 
 #game {
@@ -37,6 +38,7 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     background-color: white;
+    color: white;
 }
 
 .tile.filled {

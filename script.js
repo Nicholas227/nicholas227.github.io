@@ -145,27 +145,19 @@ function getEvilFeedback(guess) {
     // Get all possible feedbacks
     const feedbacks = currentPossible.map(word => getFeedback(guess, word));
 
-    // Count occurrences of each feedback
-    const feedbackMap = {};
-    feedbacks.forEach(fb => {
-        const key = fb.join(',');
-        if (!feedbackMap[key]) {
-            feedbackMap[key] = { fb, count: 0 };
-        }
-        feedbackMap[key].count++;
-    });
-
-    // Find the feedback with the lowest count
-    let minCount = Infinity;
+    // Find the feedback with the fewest greens, then fewest yellows
     let bestFb = null;
-    for (const key in feedbackMap) {
-        const fb = feedbackMap[key].fb;
-        const count = feedbackMap[key].count;
-        if (count < minCount) {
-            minCount = count;
+    let minGreens = Infinity;
+    let minYellows = Infinity;
+    feedbacks.forEach(fb => {
+        const greens = fb.filter(c => c === 'green').length;
+        const yellows = fb.filter(c => c === 'yellow').length;
+        if (greens < minGreens || (greens === minGreens && yellows < minYellows)) {
+            minGreens = greens;
+            minYellows = yellows;
             bestFb = fb;
         }
-    }
+    });
 
     // Filter possible words
     currentPossible = currentPossible.filter(word => {
