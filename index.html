@@ -68,6 +68,15 @@
             cursor: pointer;
             text-transform: uppercase;
         }
+        .key.green {
+            background-color: #538d4e;
+        }
+        .key.yellow {
+            background-color: #b59f3b;
+        }
+        .key.gray {
+            background-color: #3a3a3c;
+        }
         .key.wide {
             padding: 15px 20px;
         }
@@ -81,11 +90,12 @@
     </div>
 
     <script>
-        const ALL_WORDS = ["AWING", "AGLOW", "CUTIE", "CHARM", "SMILE", "SWEET", "BELLE"];
+        const ALL_WORDS = ["AGLOW", "CUTIE", "CHARM", "SMILE", "SWEET", "BELLE"];
         let possibleWords = [...ALL_WORDS];
         let currentGuess = "";
         let currentRow = 0;
         const maxGuesses = 6;
+        const keyStates = {};
 
         function init() {
             const grid = document.getElementById("grid");
@@ -176,6 +186,23 @@
             return pattern.join(",");
         }
 
+        function updateKeyboard(guess, patternArr) {
+            for (let i = 0; i < 5; i++) {
+                const letter = guess[i];
+                const state = patternArr[i] === 'correct' ? 'green' : patternArr[i] === 'present' ? 'yellow' : 'gray';
+                const key = Array.from(document.querySelectorAll('.key')).find(k => k.textContent === letter);
+                if (!key) continue;
+
+                const currentState = keyStates[letter] || '';
+                if (currentState === 'green') continue;
+                if (currentState === 'yellow' && state === 'gray') continue;
+
+                keyStates[letter] = state;
+                key.classList.remove('green', 'yellow', 'gray');
+                key.classList.add(state);
+            }
+        }
+
         function submitGuess() {
             if (currentGuess.length !== 5) return;
 
@@ -204,6 +231,7 @@
 
             possibleWords = patterns[bestPattern];
             const patternArr = bestPattern.split(",");
+            updateKeyboard(currentGuess, patternArr);
             
             const row = document.getElementsByClassName("row")[currentRow];
             const tiles = row.getElementsByClassName("tile");
